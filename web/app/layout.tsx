@@ -1,10 +1,10 @@
 import type {Metadata} from 'next'
 
 import './globals.css'
+import {getHomeMetadata} from '@/sanity/lib/metadata'
 
-export const metadata: Metadata = {
-  title: 'Connor Norman Walker',
-  description: 'A Next.js site powered by Sanity',
+export async function generateMetadata(): Promise<Metadata> {
+  return getHomeMetadata()
 }
 
 export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
