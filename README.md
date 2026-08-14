@@ -1,8 +1,22 @@
-# Sanity + Next.js starter
+# Connor Norman Walker
 
-1. Run `npm install`.
-2. Copy `.env.local.example` to `.env.local` and add your Sanity credentials. The project ID, dataset, API version, and Studio URL are already prefilled for this project. Keep `SANITY_API_READ_TOKEN` secret and never commit it.
-3. Run `npm run dev`, then open [http://localhost:3000](http://localhost:3000).
-4. Open `/studio` to create and publish your first post.
+This mirrors the Bimbo Books setup: two separate applications.
 
-Create a project at [sanity.io/manage](https://www.sanity.io/manage) if you do not already have one. The studio is embedded in the Next.js app, so no separate Sanity process is needed.
+- `web/` is the public Next.js site. Deploy this folder to Netlify.
+- `studio/` is the Sanity Studio. Run and deploy it separately.
+
+Run each app in a separate terminal:
+
+```sh
+cd web
+npm install
+npm run dev
+```
+
+```sh
+cd studio
+npm install
+npm run dev
+```
+
+For Netlify, set the **Base directory** to `web`.
