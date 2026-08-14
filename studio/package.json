@@ -9,7 +9,7 @@
   "dependencies": {
     "@sanity/vision": "^5.29.0",
     "sanity": "^5.29.0",
-    "styled-components": "^6.0.0"
+    "styled-components": "^6.1.15"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

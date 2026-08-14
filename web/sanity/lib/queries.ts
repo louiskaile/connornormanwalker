@@ -1,4 +1,4 @@
-import { defineQuery } from 'next-sanity'
+import {defineQuery} from 'next-sanity'
 
 export const POSTS_QUERY = defineQuery(`
   *[_type == "post"] | order(publishedAt desc) {

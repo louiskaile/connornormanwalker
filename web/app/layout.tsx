@@ -1,4 +1,5 @@
-import type { Metadata } from 'next'
+import type {Metadata} from 'next'
+
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -6,6 +7,6 @@ export const metadata: Metadata = {
   description: 'A Next.js site powered by Sanity',
 }
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
   return <html lang="en"><body>{children}</body></html>
 }
