@@ -1,7 +1,7 @@
 # Sanity + Next.js starter
 
 1. Run `npm install`.
-2. Copy `.env.local.example` to `.env.local` and add your Sanity project ID and dataset.
+2. Copy `.env.local.example` to `.env.local` and add your Sanity credentials. The project ID, dataset, API version, and Studio URL are already prefilled for this project. Keep `SANITY_API_READ_TOKEN` secret and never commit it.
 3. Run `npm run dev`, then open [http://localhost:3000](http://localhost:3000).
 4. Open `/studio` to create and publish your first post.
 
