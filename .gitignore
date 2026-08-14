@@ -1,6 +1,7 @@
 node_modules
 .next
 .env*.local
+studio/.env
 dist
 coverage
 *.tsbuildinfo
