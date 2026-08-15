@@ -40,10 +40,19 @@ export function JournalScroller({posts}: {posts: JournalPost[]}) {
       const list = listRef.current
       const firstItem = list?.children.item(0) as HTMLElement | null
       const secondItem = list?.children.item(1) as HTMLElement | null
+      const measuredItemHeight = firstItem?.offsetHeight ?? 0
+      const measuredItemStep = firstItem && secondItem
+        ? secondItem.offsetTop - firstItem.offsetTop
+        : 0
+      const verticalInset = window.innerWidth <= 720 ? 64 : 128
+      const maximumWindowHeight = window.innerHeight - verticalInset
+      const fiveTitleWindowHeight = measuredItemHeight + measuredItemStep * 4
 
-      if (firstItem) setItemHeight(firstItem.offsetHeight)
-      if (firstItem && secondItem) setItemStep(secondItem.offsetTop - firstItem.offsetTop)
-      setViewportHeight(list?.parentElement?.clientHeight ?? window.innerHeight)
+      if (measuredItemHeight) setItemHeight(measuredItemHeight)
+      if (measuredItemStep) setItemStep(measuredItemStep)
+      setViewportHeight(fiveTitleWindowHeight
+        ? Math.min(maximumWindowHeight, fiveTitleWindowHeight)
+        : maximumWindowHeight)
     }
 
     measureList()
@@ -111,13 +120,13 @@ export function JournalScroller({posts}: {posts: JournalPost[]}) {
     return () => window.clearTimeout(resumeTimer)
   }, [isAnimating])
 
-  const offset = viewportHeight / 2 - itemHeight / 2 - itemStep / 2 - activeIndex * itemStep
+  const offset = viewportHeight / 2 - itemHeight / 2 - activeIndex * itemStep - 18
 
   return (
     <main className={`journal-scroll-area journal-enter${hasEntered ? ' is-entered' : ''}`}>
       <div className="journal-scroll-viewport">
         <a className="journal-menu-link" href="/">Menu</a>
-        <div className="journal-list-window">
+        <div className="journal-list-window" style={viewportHeight ? {height: `${viewportHeight}px`} : undefined}>
           <nav
             aria-label="Journal posts"
             className={`journal-list journal-scroll-list${isAnimating ? ' is-spinning' : ''}`}
@@ -125,7 +134,11 @@ export function JournalScroller({posts}: {posts: JournalPost[]}) {
             style={{transform: `translateY(${offset}px)`}}
           >
             {repeatedPosts.map((post, index) => (
-              <a className="baskervville-heading journal-post-link" href={`/stories/${post.slug}`} key={`${post._id}-${index}`}>
+              <a
+                className={`baskervville-heading journal-post-link${index === activeIndex ? ' is-active-title' : ''}`}
+                href={`/stories/${post.slug}`}
+                key={`${post._id}-${index}`}
+              >
                 {post.title}
               </a>
             ))}

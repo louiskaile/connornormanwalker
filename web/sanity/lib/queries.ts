@@ -19,8 +19,34 @@ export const JOURNAL_POST_QUERY = defineQuery(`
     _id,
     title,
     excerpt,
-    content,
+    coverImage {
+      asset,
+      alt,
+      caption
+    },
+    content[]{
+      ...,
+      _type == "image" => {
+        ...,
+        asset,
+        alt,
+        caption
+      }
+    },
     "slug": slug.current
+  }
+`)
+
+export const RELATED_JOURNAL_POSTS_QUERY = defineQuery(`
+  *[_type == "post" && slug.current != $slug] | order(publishedAt desc)[0...2] {
+    _id,
+    title,
+    "slug": slug.current,
+    coverImage {
+      asset,
+      alt,
+      caption
+    }
   }
 `)
 

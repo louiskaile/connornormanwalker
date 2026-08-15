@@ -2,6 +2,9 @@ import {client} from '@/sanity/lib/client'
 import {JOURNAL_POSTS_QUERY} from '@/sanity/lib/queries'
 import {JournalScroller} from './journal-scroller'
 
+// Keep the journal index fresh when new posts are published in Sanity.
+export const revalidate = 0
+
 type JournalPost = {_id: string; title: string; slug: string}
 
 export const defaultJournalPosts: JournalPost[] = [
@@ -13,7 +16,7 @@ export const defaultJournalPosts: JournalPost[] = [
 ]
 
 export default async function JournalIndexPage() {
-  const posts = await client.fetch<JournalPost[]>(JOURNAL_POSTS_QUERY).catch(() => [])
+  const posts = await client.withConfig({useCdn: false}).fetch<JournalPost[]>(JOURNAL_POSTS_QUERY).catch(() => [])
   const journalPosts = posts.length ? posts : defaultJournalPosts
 
   return <JournalScroller posts={journalPosts} />

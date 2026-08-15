@@ -79,26 +79,122 @@ function GalleryCard({item, colour, onActivate}: {item: GalleryItem; colour: str
   )
 }
 
-export default function GalleryPage() {
-  const [activeTitle, setActiveTitle] = useState('')
+function GalleryPairCard({
+  item,
+  colour,
+  shape,
+  side,
+  onActivate,
+}: {
+  item: GalleryItem
+  colour: string
+  shape: 'portrait' | 'landscape'
+  side: 'left' | 'right'
+  onActivate: (title: string) => void
+}) {
+  const [hasLoaded, setHasLoaded] = useState(false)
 
   return (
-    <main className="gallery-page">
-      <p className="gallery-title titles" aria-live="polite">{activeTitle}</p>
+    <article
+      className={`gallery-pair-item gallery-pair-item--${shape} gallery-pair-item--${side}`}
+      onMouseEnter={() => onActivate(item.title)}
+    >
+      <div
+        aria-label={item.title}
+        className={`gallery-image-slot${hasLoaded ? ' is-loaded' : ''}`}
+        role="img"
+        style={{'--slot-color': colour} as CSSProperties}
+      >
+        {item.src && <img alt="" className="gallery-image" onLoad={() => setHasLoaded(true)} src={item.src} />}
+      </div>
+    </article>
+  )
+}
+
+export default function GalleryPage() {
+  const [activeTitle, setActiveTitle] = useState('')
+  const [isPairView, setIsPairView] = useState(false)
+  const [pairIndex, setPairIndex] = useState(0)
+  const galleryPairs = Array.from({length: galleryItems.length / 2}, (_, index) => (
+    galleryItems.slice(index * 2, index * 2 + 2)
+  ))
+  const visiblePair = galleryPairs[pairIndex] ?? galleryPairs[0]
+
+  return (
+    <main className={`gallery-page${isPairView ? ' gallery-page--pairs' : ''}`}>
       <header className="gallery-header">
+        <button
+          aria-label={isPairView ? 'Show gallery grid' : 'Show paired gallery'}
+          aria-pressed={isPairView}
+          className="gallery-layout-toggle"
+          onClick={() => setIsPairView((current) => !current)}
+          type="button"
+        >
+          <span aria-hidden="true" className="gallery-layout-copy titles">{isPairView ? 'II' : 'I'}</span>
+          <span aria-hidden="true" className="gallery-layout-copy gallery-layout-copy--inactive titles">{isPairView ? 'I' : 'II'}</span>
+        </button>
+        <p className="gallery-title titles" aria-live="polite">{activeTitle}</p>
+        {isPairView && visiblePair && (
+          <>
+            <span className="gallery-pair-nav-title gallery-pair-nav-title--left titles">{visiblePair[0].title}</span>
+            <span className="gallery-pair-nav-title gallery-pair-nav-title--right titles">{visiblePair[1].title}</span>
+          </>
+        )}
         <a className="gallery-menu-link" href="/" aria-label="Back to menu">Menu</a>
       </header>
 
-      <section className="gallery-grid" aria-label="Gallery">
-        {galleryItems.map((item) => (
-          <GalleryCard
-            key={item.id}
-            colour={galleryColours[(item.id - 1) % galleryColours.length]}
-            item={item}
-            onActivate={setActiveTitle}
-          />
-        ))}
-      </section>
+      {isPairView ? (
+        <section
+          aria-label="Paired gallery"
+          className="gallery-pairs"
+          onScroll={(event) => setPairIndex(Math.round(event.currentTarget.scrollTop / event.currentTarget.clientHeight))}
+        >
+          {galleryPairs.map(([portrait, landscape], index) => {
+            const portraitSide = index % 2 === 0 ? 'left' : 'right'
+            const landscapeSide = index % 2 === 0 ? 'right' : 'left'
+
+            return (
+              <div className="gallery-pair" key={`${portrait.id}-${landscape.id}`}>
+                <GalleryPairCard
+                  colour={galleryColours[(portrait.id - 1) % galleryColours.length]}
+                  item={portrait}
+                  onActivate={setActiveTitle}
+                  shape="portrait"
+                  side={portraitSide}
+                />
+                <GalleryPairCard
+                  colour={galleryColours[(landscape.id - 1) % galleryColours.length]}
+                  item={landscape}
+                  onActivate={setActiveTitle}
+                  shape="landscape"
+                  side={landscapeSide}
+                />
+              </div>
+            )
+          })}
+        </section>
+      ) : (
+        <section className="gallery-grid" aria-label="Gallery">
+          {galleryItems.map((item) => (
+            <GalleryCard
+              key={item.id}
+              colour={galleryColours[(item.id - 1) % galleryColours.length]}
+              item={item}
+              onActivate={setActiveTitle}
+            />
+          ))}
+        </section>
+      )}
+      {!isPairView && (
+        <footer className="gallery-footer journal-footer">
+          <nav aria-label="Footer navigation" className="journal-footer-links">
+            <a href="/">Connor Norman-Walker</a>
+            <a href="https://www.instagram.com/connornormanwalker/" rel="noreferrer" target="_blank">Instagram</a>
+            <a href="https://www.linkedin.com/" rel="noreferrer" target="_blank">LinkedIn</a>
+          </nav>
+          <a className="journal-footer-credit" href="https://louiskaile.com" rel="noreferrer" target="_blank">Site by Louiskaile</a>
+        </footer>
+      )}
     </main>
   )
 }
