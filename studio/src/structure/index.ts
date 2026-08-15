@@ -7,6 +7,9 @@ export const structure: StructureResolver = (S) =>
       S.listItem()
         .title('Home Page')
         .child(S.document().schemaType('homePage').documentId('homePage')),
+      S.listItem()
+        .title('Contact Page')
+        .child(S.document().schemaType('contactPage').documentId('contactPage')),
       S.divider(),
       S.listItem()
         .title('Pages')
@@ -14,7 +17,7 @@ export const structure: StructureResolver = (S) =>
       S.listItem()
         .title('Projects')
         .child(S.documentTypeList('project').title('Projects')),
-      S.listItem().title('Posts').child(S.documentTypeList('post').title('Posts')),
+      S.listItem().title('Journal Posts').child(S.documentTypeList('post').title('Journal Posts')),
       S.divider(),
       S.listItem()
         .title('Navigation')
