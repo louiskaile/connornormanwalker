@@ -35,7 +35,7 @@ type MetadataData = {
 const fallbackSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://connornormanwalker.netlify.app'
 
 export async function getHomeMetadata(): Promise<Metadata> {
-  const data = await client.fetch<MetadataData>(HOME_METADATA_QUERY, {}, {stega: false})
+  const data = await client.fetch<MetadataData>(HOME_METADATA_QUERY, {}, {stega: false}).catch(() => ({} as MetadataData))
   const defaults = data.settings?.defaultSeo
   const seo = data.home?.seo
   const siteName = data.settings?.siteTitle || 'Connor Norman Walker'
