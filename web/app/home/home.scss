@@ -1,0 +1,94 @@
+@use '../styles/mixins' as *;
+@use '../styles/variables' as *;
+
+.menu-page { @include viewport-page($colour-menu); }
+
+.navigation {
+  height: 808px;
+  left: calc(50% - 350px);
+  position: absolute;
+  top: calc(50% - 406.81px);
+  width: 698px;
+
+  ul { list-style: none; margin: 0; padding: 0; text-align: center; }
+  li { height: 202px; }
+  a {
+    @include interactive-opacity;
+    @include focus-ring(23.12px);
+    color: $colour-black;
+    display: inline-block;
+    font-family: $font-display;
+    font-size: 128.443px;
+    font-style: normal;
+    font-synthesis: none;
+    font-weight: 265;
+    letter-spacing: 14.129px;
+    line-height: 201.6555px;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+}
+
+.menu-reveal {
+  filter: blur(18px);
+  opacity: 0;
+  transform: scale(.92);
+  transition: filter 1.7s $ease-out, opacity 1.35s ease-out, transform 1.7s $ease-out;
+  will-change: filter, opacity, transform;
+
+  &.is-revealed { filter: blur(0); opacity: 1; transform: scale(1); }
+  li {
+    opacity: 0;
+    transform: translateY(54px);
+    transition: opacity 1.15s ease-out, transform 1.45s $ease-out;
+    will-change: opacity, transform;
+  }
+  &.is-revealed li { opacity: 1; transform: translateY(0); }
+  &.is-revealed li:nth-child(1) { transition-delay: 180ms; }
+  &.is-revealed li:nth-child(2) { transition-delay: 390ms; }
+  &.is-revealed li:nth-child(3) { transition-delay: 600ms; }
+  &.is-revealed li:nth-child(4) { transition-delay: 810ms; }
+}
+
+@include reduced-motion {
+  .menu-reveal,
+  .menu-reveal li { filter: none; transform: none; transition: opacity 450ms ease-out; }
+  .menu-reveal.is-revealed li { transition-delay: 0ms; }
+}
+
+@include breakpoint(mobile) {
+  .menu-page {
+    @include mobile-inline-padding;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 100svh;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+    padding-top: max(28px, env(safe-area-inset-top));
+  }
+
+  .navigation {
+    height: auto;
+    left: auto;
+    max-width: 560px;
+    position: static;
+    top: auto;
+    width: 100%;
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(18px, 4svh, 30px);
+    }
+
+    li { height: auto; }
+
+    a {
+      font-size: clamp(38px, 12vw, 64px);
+      letter-spacing: clamp(4.18px, 1.32vw, 7.04px);
+      line-height: 96%;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+  }
+}

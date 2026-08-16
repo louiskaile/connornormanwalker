@@ -1,11 +1,13 @@
 'use client'
 
-import {useEffect, useRef, useState} from 'react'
+import {type TouchEvent, useCallback, useEffect, useRef, useState} from 'react'
+import {SiteHeader} from '@/app/components/site-header/site-header'
+import type {JournalPostSummary} from './stories.ts'
+import './stories.scss'
 
-type JournalPost = {_id: string; title: string; slug: string}
-
-export function JournalScroller({posts}: {posts: JournalPost[]}) {
+export function StoriesPage({posts}: {posts: JournalPostSummary[]}) {
   const listRef = useRef<HTMLElement>(null)
+  const touchStartYRef = useRef<number | null>(null)
   const wheelDistanceRef = useRef(0)
   const scrollLockedRef = useRef(false)
   const scrollUnlockTimerRef = useRef<number | null>(null)
@@ -16,6 +18,20 @@ export function JournalScroller({posts}: {posts: JournalPost[]}) {
   const [hasEntered, setHasEntered] = useState(false)
   const [activeIndex, setActiveIndex] = useState(posts.length * 3 + Math.floor(posts.length / 2))
   const repeatedPosts = Array.from({length: 7}, () => posts).flat()
+
+  const moveTitles = useCallback((direction: number) => {
+    if (scrollLockedRef.current) return
+
+    scrollLockedRef.current = true
+    setIsAnimating(true)
+    setActiveIndex((currentIndex) => currentIndex + direction)
+    navigator.vibrate?.(8)
+
+    scrollUnlockTimerRef.current = window.setTimeout(() => {
+      scrollLockedRef.current = false
+      wheelDistanceRef.current = 0
+    }, 90)
+  }, [])
 
   useEffect(() => {
     let firstFrame = 0
@@ -44,7 +60,7 @@ export function JournalScroller({posts}: {posts: JournalPost[]}) {
       const measuredItemStep = firstItem && secondItem
         ? secondItem.offsetTop - firstItem.offsetTop
         : 0
-      const verticalInset = window.innerWidth <= 720 ? 64 : 128
+      const verticalInset = window.innerWidth <= 767 ? 104 : 128
       const maximumWindowHeight = window.innerHeight - verticalInset
       const fiveTitleWindowHeight = measuredItemHeight + measuredItemStep * 4
 
@@ -66,7 +82,7 @@ export function JournalScroller({posts}: {posts: JournalPost[]}) {
   }, [])
 
   useEffect(() => {
-    const moveTitles = (event: WheelEvent) => {
+    const handleWheel = (event: WheelEvent) => {
       event.preventDefault()
       if (scrollLockedRef.current) return
 
@@ -76,26 +92,18 @@ export function JournalScroller({posts}: {posts: JournalPost[]}) {
 
       const direction = Math.sign(wheelDistanceRef.current)
       wheelDistanceRef.current = 0
-      scrollLockedRef.current = true
-      setIsAnimating(true)
-      setActiveIndex((currentIndex) => currentIndex + direction)
-      navigator.vibrate?.(8)
-
-      scrollUnlockTimerRef.current = window.setTimeout(() => {
-        scrollLockedRef.current = false
-        wheelDistanceRef.current = 0
-      }, 90)
+      moveTitles(direction)
     }
 
-    window.addEventListener('wheel', moveTitles, {passive: false})
+    window.addEventListener('wheel', handleWheel, {passive: false})
 
     return () => {
-      window.removeEventListener('wheel', moveTitles)
+      window.removeEventListener('wheel', handleWheel)
       if (scrollUnlockTimerRef.current !== null) {
         window.clearTimeout(scrollUnlockTimerRef.current)
       }
     }
-  }, [])
+  }, [moveTitles])
 
   useEffect(() => {
     const lowerLoopBoundary = posts.length
@@ -122,10 +130,23 @@ export function JournalScroller({posts}: {posts: JournalPost[]}) {
 
   const offset = viewportHeight / 2 - itemHeight / 2 - activeIndex * itemStep - 18
 
+  const handleTouchStart = (event: TouchEvent) => {
+    touchStartYRef.current = event.touches[0]?.clientY ?? null
+  }
+
+  const handleTouchEnd = (event: TouchEvent) => {
+    const startY = touchStartYRef.current
+    const endY = event.changedTouches[0]?.clientY
+    touchStartYRef.current = null
+
+    if (startY === null || endY === undefined || Math.abs(startY - endY) < 40) return
+    moveTitles(startY > endY ? 1 : -1)
+  }
+
   return (
     <main className={`journal-scroll-area journal-enter${hasEntered ? ' is-entered' : ''}`}>
-      <div className="journal-scroll-viewport">
-        <a className="journal-menu-link" href="/">Menu</a>
+      <SiteHeader tone="blue" />
+      <div className="journal-scroll-viewport" onTouchEnd={handleTouchEnd} onTouchStart={handleTouchStart}>
         <div className="journal-list-window" style={viewportHeight ? {height: `${viewportHeight}px`} : undefined}>
           <nav
             aria-label="Journal posts"

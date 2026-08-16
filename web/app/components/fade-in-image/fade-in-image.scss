@@ -1,0 +1,13 @@
+.site-image {
+  opacity: 0;
+  transition: opacity 420ms ease;
+
+  &.is-loaded { opacity: 1; }
+}
+
+.site-image-frame {
+  background: #c4b42e;
+  display: block;
+  overflow: hidden;
+}
+

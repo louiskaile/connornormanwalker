@@ -32,7 +32,7 @@ export function JournalNavTitle({title}: {title: string}) {
   return (
     <h1
       aria-label={showContinueReading ? 'Continue Reading' : title}
-      className={`journal-article-nav-title titles${showContinueReading ? ' is-continue-reading' : ''}`}
+      className={`journal-nav-title${showContinueReading ? ' is-continue-reading' : ''}`}
     >
       <span aria-hidden="true" className="journal-nav-label journal-nav-label--post">{title}</span>
       <span aria-hidden="true" className="journal-nav-label journal-nav-label--continue">Continue Reading</span>

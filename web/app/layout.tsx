@@ -1,6 +1,6 @@
 import type {Metadata} from 'next'
 
-import './globals.css'
+import './globals.scss'
 import {getHomeMetadata} from '@/sanity/lib/metadata'
 
 export async function generateMetadata(): Promise<Metadata> {

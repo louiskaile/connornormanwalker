@@ -1,0 +1,42 @@
+@use '../../styles/mixins' as *;
+@use '../../styles/variables' as *;
+
+.site-footer {
+  @include display-label(10px, 1.6px);
+  align-items: center;
+  background: transparent;
+  display: flex;
+  justify-content: space-between;
+  margin: clamp(128px, 11vw, 192px) 0 0;
+  min-height: 0;
+  padding: 0 $header-gutter 17px;
+
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+  }
+
+  a {
+    @include interactive-opacity(.55);
+    @include focus-ring(4px);
+    color: $colour-black;
+    text-decoration: none;
+  }
+}
+
+@include breakpoint(mobile) {
+  .site-footer {
+    @include mobile-inline-padding;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 28px;
+    margin: 80px 0 0;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+
+    &__links {
+      column-gap: 20px;
+      row-gap: 10px;
+    }
+  }
+}

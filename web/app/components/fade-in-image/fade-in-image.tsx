@@ -28,3 +28,4 @@ export function FadeInImage({alt, className, src}: FadeInImageProps) {
     </span>
   )
 }
+

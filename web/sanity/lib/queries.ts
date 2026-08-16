@@ -68,6 +68,23 @@ export const CONTACT_PAGE_QUERY = defineQuery(`
   }
 `)
 
+export const ABOUT_PAGE_QUERY = defineQuery(`
+  {
+    "page": *[_type == "page" && slug.current == "about"][0] {
+      title,
+      intro,
+      "image": content[_type == "image"][0] {
+        asset,
+        alt
+      }
+    },
+    "fallbackImage": *[_type == "post" && defined(coverImage.asset)][0].coverImage {
+      asset,
+      alt
+    }
+  }
+`)
+
 export const HOME_METADATA_QUERY = defineQuery(`
   {
     "settings": *[_type == "settings" && _id == "siteSettings"][0] {
