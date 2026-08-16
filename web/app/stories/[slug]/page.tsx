@@ -1,10 +1,12 @@
 import {notFound} from 'next/navigation'
 import {PortableText} from 'next-sanity'
 
+import {FadeInImage} from '@/app/fade-in-image'
 import {client} from '@/sanity/lib/client'
 import {urlForImage} from '@/sanity/lib/image'
 import {JOURNAL_POST_QUERY, JOURNAL_POSTS_QUERY, RELATED_JOURNAL_POSTS_QUERY} from '@/sanity/lib/queries'
 import {defaultJournalPosts} from '../page'
+import {JournalBackZones} from './journal-back-zones'
 import {JournalNavTitle} from './journal-nav-title'
 
 export const revalidate = 60
@@ -38,7 +40,7 @@ function JournalImageFigure({image, hero = false}: {image: JournalImage; hero?: 
 
   return (
     <figure className={hero ? 'journal-hero' : 'journal-content-image'}>
-      <img alt={image.alt || ''} src={src} />
+      <FadeInImage alt={image.alt || ''} src={src} />
       {image.caption && <figcaption className="journal-image-caption titles">{image.caption}</figcaption>}
     </figure>
   )
@@ -52,7 +54,7 @@ function RelatedPostCard({post, index}: {post: RelatedPost; index: number}) {
   return (
     <a className={`journal-related-card journal-related-card--${index + 1}`} href={`/stories/${post.slug}`}>
       <div className="journal-related-media">
-        {imageUrl && <img alt={post.coverImage?.alt || ''} src={imageUrl} />}
+        {imageUrl && <FadeInImage alt={post.coverImage?.alt || ''} src={imageUrl} />}
       </div>
       <span className="journal-related-title titles">{post.title}</span>
     </a>
@@ -98,6 +100,7 @@ export default async function JournalPostPage({params}: {params: Promise<{slug: 
 
   return (
     <main className="journal-article-page">
+      <JournalBackZones />
       <header className="journal-article-header">
         <JournalNavTitle title={title} />
         <a className="journal-menu-link" href="/">Menu</a>
