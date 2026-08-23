@@ -1,4 +1,4 @@
-import AboutPage from './about.tsx'
+import AboutPage from "./about.tsx";
 
-export const revalidate = 60
-export default AboutPage
+export const revalidate = 60;
+export default AboutPage;

@@ -1,0 +1,45 @@
+@use "../shared" as *;
+
+.overlay {
+  align-items: center;
+  backdrop-filter: blur(8px);
+  background: rgba(#bed0d8, 88%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  opacity: 0%;
+  pointer-events: none;
+  position: fixed;
+  transition:
+    backdrop-filter 700ms $ease-out,
+    opacity 700ms $ease-out;
+  visibility: hidden;
+  z-index: 100;
+
+  &.visible {
+    opacity: 100%;
+    visibility: visible;
+
+    .mark {
+      opacity: 100%;
+      transform: scale(1);
+    }
+  }
+}
+
+.mark {
+  height: auto;
+  opacity: 0%;
+  transform: scale(0.96);
+  transition:
+    opacity 700ms $ease-out 100ms,
+    transform 900ms $ease-out 100ms;
+  width: clamp(180px, 20vw, 300px);
+}
+
+@include reduced-motion {
+  .overlay,
+  .mark {
+    transition-duration: 160ms;
+  }
+}

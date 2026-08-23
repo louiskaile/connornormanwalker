@@ -1,47 +1,64 @@
-@use 'variables' as *;
-@use 'mixins' as *;
+@use "shared" as *;
 
 @font-face {
   font-display: swap;
-  font-family: 'Ambit';
+  font-family: "Ambit";
   font-style: normal;
   font-weight: 100 900;
-  src: url('/fonts/AmbitExtraLight.woff2') format('woff2');
+  src: url("/fonts/AmbitExtraLight.woff2") format("woff2");
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'Ambit';
+  font-family: "Ambit";
   font-style: normal;
   font-weight: 900;
-  src: url('/fonts/AmbitBlack.woff2') format('woff2');
+  src: url("/fonts/AmbitBlack.woff2") format("woff2");
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'Ambit Bold';
+  font-family: "Ambit Bold";
   font-style: normal;
   font-weight: 700;
-  src: url('/fonts/AmbitBold.woff2') format('woff2');
+  src: url("/fonts/AmbitBold.woff2") format("woff2");
 }
 
 @font-face {
   font-display: swap;
-  font-family: 'Baskervville';
+  font-family: "Baskervville";
   font-style: normal;
   font-weight: 400 700;
-  src: url('/fonts/BaskervvilleVariable.woff2') format('woff2');
+  src: url("/fonts/BaskervvilleVariable.woff2") format("woff2");
 }
 
 :root {
-  background: $colour-menu;
+  background: $colour-paper;
   color: $colour-light-text;
   font-family: $font-serif;
 }
 
-* { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; }
-body { overflow-x: hidden; }
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: #bed0d8;
+  color: #000;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+body {
+  overflow-x: hidden;
+}
+
+.site-grid {
+  @include site-grid;
+}
 
 .visually-hidden {
   clip: rect(0 0 0 0);
@@ -73,28 +90,29 @@ body { overflow-x: hidden; }
 }
 
 .body-copy {
-  color: $colour-black;
-  font-family: $font-serif;
-  font-size: 25px;
-  font-style: normal;
-  font-weight: 400;
-  letter-spacing: .5px;
-  line-height: 40px;
+  @include body-copy;
   max-width: calc(100% - 64px);
-  text-align: center;
+  text-align: left;
   width: 880px;
 }
 
 @include breakpoint(mobile) {
+  .site-grid {
+    column-gap: $mobile-gutter;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding-left: max($mobile-gutter, env(safe-area-inset-left));
+    padding-right: max($mobile-gutter, env(safe-area-inset-right));
+  }
+
   .baskervville-heading {
     font-size: clamp(36px, 10.5vw, 56px);
-    letter-spacing: clamp(-1.12px, -0.21vw, -.72px);
+    letter-spacing: clamp(-1.12px, -0.21vw, -0.72px);
     line-height: 120%;
   }
 
   .body-copy {
     font-size: 19px;
-    letter-spacing: .2px;
+    letter-spacing: 0.2px;
     line-height: 29px;
     max-width: calc(100% - 32px);
   }

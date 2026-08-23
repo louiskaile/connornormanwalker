@@ -1,7 +1,15 @@
-@use '../styles/mixins' as *;
-@use '../styles/variables' as *;
+@use "../shared" as *;
 
-.menu-page { @include viewport-page($colour-menu); }
+.page {
+  @include viewport-page($colour-menu);
+}
+.siteNavigation {
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  position: fixed;
+  right: 0;
+}
 
 .navigation {
   height: 808px;
@@ -10,8 +18,15 @@
   top: calc(50% - 406.81px);
   width: 698px;
 
-  ul { list-style: none; margin: 0; padding: 0; text-align: center; }
-  li { height: 202px; }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+  li {
+    height: 202px;
+  }
   a {
     @include interactive-opacity;
     @include focus-ring(23.12px);
@@ -29,35 +44,61 @@
   }
 }
 
-.menu-reveal {
+.reveal {
   filter: blur(18px);
-  opacity: 0;
-  transform: scale(.92);
-  transition: filter 1.7s $ease-out, opacity 1.35s ease-out, transform 1.7s $ease-out;
+  opacity: 0%;
+  transform: scale(0.92);
+  transition:
+    filter 1.7s $ease-out,
+    opacity 1.35s ease-out,
+    transform 1.7s $ease-out;
   will-change: filter, opacity, transform;
 
-  &.is-revealed { filter: blur(0); opacity: 1; transform: scale(1); }
+  &.revealed {
+    filter: blur(0);
+    opacity: 100%;
+    transform: scale(1);
+  }
   li {
-    opacity: 0;
+    opacity: 0%;
     transform: translateY(54px);
-    transition: opacity 1.15s ease-out, transform 1.45s $ease-out;
+    transition:
+      opacity 1.15s ease-out,
+      transform 1.45s $ease-out;
     will-change: opacity, transform;
   }
-  &.is-revealed li { opacity: 1; transform: translateY(0); }
-  &.is-revealed li:nth-child(1) { transition-delay: 180ms; }
-  &.is-revealed li:nth-child(2) { transition-delay: 390ms; }
-  &.is-revealed li:nth-child(3) { transition-delay: 600ms; }
-  &.is-revealed li:nth-child(4) { transition-delay: 810ms; }
+  &.revealed li {
+    opacity: 100%;
+    transform: translateY(0);
+  }
+  &.revealed li:nth-child(1) {
+    transition-delay: 180ms;
+  }
+  &.revealed li:nth-child(2) {
+    transition-delay: 390ms;
+  }
+  &.revealed li:nth-child(3) {
+    transition-delay: 600ms;
+  }
+  &.revealed li:nth-child(4) {
+    transition-delay: 810ms;
+  }
 }
 
 @include reduced-motion {
-  .menu-reveal,
-  .menu-reveal li { filter: none; transform: none; transition: opacity 450ms ease-out; }
-  .menu-reveal.is-revealed li { transition-delay: 0ms; }
+  .reveal,
+  .reveal li {
+    filter: none;
+    transform: none;
+    transition: opacity 450ms ease-out;
+  }
+  .reveal.revealed li {
+    transition-delay: 0ms;
+  }
 }
 
 @include breakpoint(mobile) {
-  .menu-page {
+  .page {
     @include mobile-inline-padding;
     align-items: center;
     display: flex;
@@ -81,7 +122,9 @@
       gap: clamp(18px, 4svh, 30px);
     }
 
-    li { height: auto; }
+    li {
+      height: auto;
+    }
 
     a {
       font-size: clamp(38px, 12vw, 64px);

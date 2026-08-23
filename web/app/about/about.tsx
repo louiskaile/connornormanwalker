@@ -1,27 +1,62 @@
-import {FadeInImage} from '@/app/components/fade-in-image/fade-in-image'
-import {SiteFooter} from '@/app/components/site-footer/site-footer'
-import {SiteHeader} from '@/app/components/site-header/site-header'
-import {getAboutPage} from './about.ts'
-import './about.scss'
+import { SiteNavigation } from "@/app/components/site-navigation/site-navigation";
+import styles from "@/app/components/styles/module/about.module.scss";
+import { getAboutPage } from "./about.ts";
 
-export default async function AboutPage() {
-  const {image, imageUrl, introduction, title} = await getAboutPage()
+export default async function AboutPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
+  const {
+    contactLinks,
+    creditHeading,
+    creditLink,
+    introduction,
+    newsletterFields,
+    newsletterHeading,
+    title,
+  } = await getAboutPage();
+  const isContactView = (await searchParams).view === "contact";
 
   return (
-    <main className="about-page">
-      <SiteHeader title={<p className="site-header__page-title">{title}</p>} />
-      <section aria-labelledby="about-heading" className="about-panel about-intro-panel">
-        <h1 className="visually-hidden" id="about-heading">{title}</h1>
-        <p className="about-introduction">{introduction}</p>
-      </section>
-      <section aria-label="About image" className="about-panel about-image-panel">
-        <div className="about-image-frame">
-          {imageUrl
-            ? <FadeInImage alt={image?.alt || ''} src={imageUrl} />
-            : <div aria-label="About image placeholder" className="about-image-placeholder" role="img" />}
-        </div>
-        <SiteFooter className="about-footer" />
-      </section>
+    <main
+      className={[styles.page, isContactView && styles.contactView]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <article className={styles.article}>
+        <header className={`${styles.contentBlock} ${styles.introBlock}`}>
+          <h1 className="visually-hidden" id="about-heading">
+            {title}
+          </h1>
+          <p className={styles.introduction}>{introduction}</p>
+        </header>
+        <section aria-label="Contact details" className={styles.contentBlock}>
+          <div className={styles.contactLinks}>
+            {contactLinks.map((link) => (
+              <a href={link.url} key={link._key || link.url}>
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </section>
+        <section
+          aria-labelledby="newsletter-heading"
+          className={`${styles.contentBlock} ${styles.newsletterBlock}`}
+        >
+          <h2 id="newsletter-heading">{newsletterHeading}</h2>
+          <div aria-hidden="true" className={styles.newsletterFields}>
+            {newsletterFields.map((field) => (
+              <span key={field}>{field}</span>
+            ))}
+          </div>
+        </section>
+        <footer className={`${styles.contentBlock} ${styles.creditBlock}`}>
+          <p>{creditHeading}</p>
+          <a href={creditLink.url}>{creditLink.label}</a>
+        </footer>
+      </article>
+      <SiteNavigation className={styles.siteNavigation} showBrand={false} />
     </main>
-  )
+  );
 }

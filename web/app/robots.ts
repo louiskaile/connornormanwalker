@@ -1,10 +1,12 @@
-import type {MetadataRoute} from 'next'
+import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://connornormanwalker.netlify.app'
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://connornormanwalker.netlify.app";
 
   return {
-    rules: {userAgent: '*', allow: '/'},
+    rules: { userAgent: "*", allow: "/" },
     host: siteUrl,
-  }
+  };
 }

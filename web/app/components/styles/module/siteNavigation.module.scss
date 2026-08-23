@@ -1,0 +1,89 @@
+@use "../shared" as *;
+
+.siteNavigation {
+  @include site-grid;
+  align-items: center;
+  background: transparent;
+  bottom: 0;
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  left: 0;
+  margin: clamp(128px, 11vw, 192px) 0 0;
+  min-height: 0;
+  padding-bottom: 28px;
+  position: fixed;
+  right: 0;
+  z-index: 10;
+
+  .brand {
+    color: #323532;
+    display: grid;
+    font-family: "Ambit", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+    left: $grid-margin;
+    letter-spacing: 0.09em;
+    line-height: 20px;
+    min-width: 0;
+    position: absolute;
+
+    .brandName,
+    .brandTokyo {
+      grid-column: 1;
+      grid-row: 1;
+      will-change: opacity, transform;
+    }
+
+    .brandName {
+      opacity: 100%;
+      transform: translateY(0);
+    }
+    .brandTokyo {
+      opacity: 0%;
+      transform: translateY(6px);
+    }
+  }
+
+  .links {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    gap: clamp(24px, 2.1vw, 40px);
+    justify-content: flex-end;
+    white-space: nowrap;
+  }
+
+  a {
+    @include navigation-link;
+    display: inline-block;
+  }
+}
+
+@include breakpoint(mobile) {
+  .siteNavigation {
+    @include mobile-inline-padding;
+    display: block;
+    margin: 80px 0 0;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+
+    .links {
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+
+    .brand {
+      display: block;
+      margin-bottom: 20px;
+      position: static;
+    }
+
+    a {
+      font-size: 16px;
+      letter-spacing: 0.09em;
+    }
+  }
+}

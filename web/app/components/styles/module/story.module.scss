@@ -1,0 +1,357 @@
+@use "../shared" as *;
+
+.page {
+  @include viewport-page($colour-paper);
+  color: $colour-black;
+  padding: 0;
+}
+
+.backZone {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  bottom: 0;
+  cursor: none;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  // The journal image starts on column 7 of the 20-column grid, so these
+  // zones meet its left and right edges without overlapping the media.
+  width: max(32px, calc(30vw + 17px));
+  z-index: 6;
+  &.backZoneLeft {
+    left: 0;
+  }
+  &.backZoneRight {
+    right: 0;
+  }
+  &:disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+  &:focus-visible {
+    outline: $focus-outline;
+    outline-offset: -4px;
+  }
+}
+
+.closeCursor {
+  @include navigation-copy;
+  color: #000;
+  pointer-events: none;
+  position: fixed;
+  transform: translate(-50%, -50%);
+  z-index: 7;
+}
+
+.backTransition {
+  background: #a5b2a8;
+  inset: 0;
+  opacity: 0%;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 650ms $ease-out;
+  z-index: 50;
+  &.active {
+    opacity: 100%;
+  }
+}
+
+.article {
+  @include site-grid;
+  margin: 0;
+  padding-bottom: 0;
+  padding-top: 60px;
+  --journal-section-spacing: clamp(56px, 5vw, 80px);
+  width: 100%;
+}
+
+.intro,
+.hero,
+.articleContent {
+  @include grid-span(7, 8);
+}
+
+.intro {
+  box-sizing: border-box;
+  justify-self: stretch;
+  padding-inline: 40px;
+  width: 100%;
+}
+
+.articleTitle {
+  @include journal-heading;
+  margin: 0;
+}
+
+.articleExcerpt {
+  @include body-copy;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  display: -webkit-box;
+  margin: 60px 0 0;
+  overflow: hidden;
+  text-align: left;
+}
+
+.hero {
+  margin: 40px 0 0;
+  min-width: 0;
+  position: relative;
+  z-index: 21;
+
+  > span {
+    aspect-ratio: 1.47 / 1;
+  }
+}
+
+.hero img,
+.contentImage img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.imageCaption,
+.relatedTitle {
+  display: block;
+  height: auto;
+  left: auto;
+  margin: 18px auto 0;
+  position: static;
+  top: auto;
+  width: auto;
+}
+.articleContent {
+  margin-top: 40px;
+  max-width: none;
+  text-align: left;
+  width: auto;
+}
+
+.articleContent p {
+  box-sizing: border-box;
+  margin: 0 auto 40px;
+  max-width: none;
+  padding-inline: 40px;
+  width: 100%;
+}
+
+.contentImage {
+  margin-inline: 0;
+  margin-bottom: 40px;
+  margin-top: 40px;
+  position: relative;
+  width: 100%;
+  z-index: 21;
+}
+
+.moreStories {
+  @include navigation-link;
+  color: #000;
+  @include grid-span(7, 8);
+  justify-self: center;
+  margin-top: 40px;
+}
+
+.related {
+  grid-column: 1 / -1;
+  margin: var(--journal-section-spacing) auto 0;
+  width: min(1700px, calc(100% - 128px));
+}
+.relatedHeading {
+  display: block;
+  height: auto;
+  left: auto;
+  margin: 0 auto var(--journal-section-spacing);
+  position: static;
+  top: auto;
+  width: auto;
+}
+.relatedGrid {
+  align-items: center;
+  display: grid;
+  gap: clamp(48px, 10vw, 224px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 auto;
+  max-width: 1500px;
+}
+.relatedCard {
+  color: $colour-black;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  &:hover .relatedMedia,
+  &:focus-visible .relatedMedia {
+    opacity: 68%;
+  }
+  &.secondCard {
+    .relatedMedia {
+      aspect-ratio: 1.43 / 1;
+      background: #367497;
+    }
+    .relatedMedia > span {
+      background: #367497;
+    }
+  }
+}
+.relatedMedia {
+  aspect-ratio: 0.84 / 1;
+  background: #c4b42e;
+  overflow: hidden;
+  width: 100%;
+  > span,
+  img {
+    height: 100%;
+    width: 100%;
+  }
+  img {
+    display: block;
+    object-fit: cover;
+  }
+}
+
+.page .navigation {
+  background: transparent;
+  bottom: 0;
+  isolation: isolate;
+  left: 0;
+  margin: 0;
+  padding-bottom: 28px;
+  padding-top: 0;
+  position: fixed;
+  right: 0;
+  z-index: 20;
+
+  &::before {
+    -webkit-backdrop-filter: blur(10px);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 18%) 18%,
+      #000 48%,
+      #000 100%
+    );
+    backdrop-filter: blur(10px);
+    background: linear-gradient(
+      to bottom,
+      rgba($colour-paper, 0%),
+      rgba($colour-paper, 2%) 15%,
+      rgba($colour-paper, 8%) 42%,
+      rgba($colour-paper, 18%) 72%,
+      rgba($colour-paper, 30%) 100%
+    );
+    content: "";
+    bottom: 0;
+    left: 0;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 18%) 18%,
+      #000 38%,
+      #000 100%
+    );
+    pointer-events: none;
+    position: absolute;
+    top: -160px;
+    transform: none;
+    width: 100%;
+    z-index: -1;
+  }
+
+  .links {
+    display: flex;
+    opacity: 1;
+    position: relative;
+    visibility: visible;
+    z-index: 1;
+
+    a {
+      color: #323532;
+      opacity: 1;
+      position: relative;
+      visibility: visible;
+      z-index: 1;
+    }
+  }
+}
+
+@include reduced-motion {
+  .backTransition {
+    transition: none;
+  }
+}
+
+@include breakpoint(mobile) {
+  .backZone {
+    display: none;
+  }
+
+  .article {
+    --journal-section-spacing: 48px;
+    column-gap: $mobile-gutter;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding-left: max($mobile-gutter, env(safe-area-inset-left));
+    padding-right: max($mobile-gutter, env(safe-area-inset-right));
+    padding-top: 28px;
+  }
+
+  .intro,
+  .hero,
+  .articleContent,
+  .moreStories {
+    grid-column: 1 / -1;
+  }
+
+  .intro {
+    padding-inline: 24px;
+  }
+
+  .articleTitle {
+    width: 100%;
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .articleExcerpt {
+    font-size: 19px;
+    letter-spacing: 0.2px;
+    line-height: 29px;
+    margin-top: 32px;
+  }
+
+  .hero {
+    margin-top: 32px;
+  }
+
+  .articleContent {
+    margin-top: 40px;
+  }
+
+  .articleContent p {
+    margin-bottom: 28px;
+    padding-inline: 24px;
+  }
+
+  .imageCaption,
+  .relatedTitle {
+    margin-top: 12px;
+  }
+
+  .related {
+    width: 100%;
+  }
+
+  .relatedGrid {
+    gap: 48px;
+    grid-template-columns: 1fr;
+  }
+
+  .page .navigation {
+    display: flex;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    padding-top: 0;
+
+  }
+}

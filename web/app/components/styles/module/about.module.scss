@@ -1,0 +1,139 @@
+@use "../shared" as *;
+
+.page {
+  @include viewport-page($colour-paper);
+  color: #676767;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.article {
+  @include site-grid;
+  padding-bottom: 160px;
+  padding-top: 60px;
+}
+
+.contentBlock {
+  @include grid-span(7, 8);
+  box-sizing: border-box;
+  padding-inline: 40px;
+}
+
+.introBlock,
+.newsletterBlock {
+  filter: blur(0);
+  opacity: 100%;
+  transition:
+    filter 720ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 600ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: filter, opacity;
+}
+
+.contactView {
+  .introBlock,
+  .newsletterBlock {
+    filter: blur(10px);
+    opacity: 14%;
+    pointer-events: none;
+  }
+
+  .creditBlock > a {
+    opacity: 28%;
+  }
+}
+
+.introduction,
+.contactLinks a,
+.contentBlock h2,
+.contentBlock p,
+.contentBlock > a,
+.newsletterFields {
+  @include body-copy;
+}
+
+.introduction,
+.contentBlock p,
+.contentBlock h2 {
+  margin: 0;
+}
+
+.contactLinks,
+.contentBlock:has(h2) {
+  margin-top: 60px;
+}
+
+.contactLinks {
+  display: flex;
+  flex-direction: column;
+}
+
+.contactLinks a,
+.contentBlock > a {
+  @include focus-ring(4px);
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 580ms cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  &:hover,
+  &:focus-visible {
+    opacity: 55%;
+  }
+}
+
+.newsletterFields {
+  color: rgba(#676767, 28%);
+  display: flex;
+  gap: clamp(24px, 4vw, 64px);
+  margin-top: 16px;
+}
+
+.contentBlock > a {
+  margin-top: 16px;
+}
+
+footer.contentBlock {
+  display: flex;
+  flex-direction: column;
+  margin-top: 60px;
+}
+
+.siteNavigation {
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  position: fixed;
+  right: 0;
+}
+
+@include breakpoint(mobile) {
+  .article {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding-bottom: 112px;
+    padding-inline: $mobile-gutter;
+    padding-top: 28px;
+  }
+
+  .contentBlock {
+    grid-column: 1 / -1;
+    padding-inline: 24px;
+  }
+
+  .introduction,
+  .contactLinks a,
+  .contentBlock h2,
+  .contentBlock p,
+  .contentBlock > a,
+  .newsletterFields {
+    font-size: 19px;
+    line-height: 29px;
+  }
+
+  .newsletterFields {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .siteNavigation {
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}

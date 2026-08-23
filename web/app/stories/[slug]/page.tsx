@@ -1,10 +1,11 @@
-import StoryPage from './story.tsx'
-import {getStoryStaticParams} from './story.ts'
+import StoryPage from "./story.tsx";
+import { getStoryStaticParams } from "./story.ts";
 
-export const revalidate = 60
+// Journal copy should reflect published Sanity edits immediately.
+export const revalidate = 0;
 
 export async function generateStaticParams() {
-  return getStoryStaticParams()
+  return getStoryStaticParams();
 }
 
-export default StoryPage
+export default StoryPage;

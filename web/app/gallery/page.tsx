@@ -1,1 +1,1 @@
-export {default} from './gallery.tsx'
+export { default } from "./gallery.tsx";

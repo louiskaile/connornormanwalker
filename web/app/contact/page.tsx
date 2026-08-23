@@ -1,1 +1,5 @@
-export {default} from './contact.tsx'
+import { redirect } from "next/navigation";
+
+export default function ContactPage() {
+  redirect("/about?view=contact");
+}

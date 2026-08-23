@@ -1,93 +1,59 @@
-'use client'
+"use client";
 
-import {type CSSProperties, useState} from 'react'
-import {SiteFooter} from '@/app/components/site-footer/site-footer'
-import {SiteHeader} from '@/app/components/site-header/site-header'
-import {galleryColours, galleryItems, galleryPairs, type GalleryItem} from './gallery.ts'
-import './gallery.scss'
+import { type CSSProperties, useState } from "react";
+import { SiteNavigation } from "@/app/components/site-navigation/site-navigation";
+import styles from "@/app/components/styles/module/gallery.module.scss";
+import { galleryColours, galleryItems, type GalleryItem } from "./gallery.ts";
 
 type CardProps = {
-  colour: string
-  item: GalleryItem
-  onActivate: (title: string) => void
-  shape?: 'portrait' | 'landscape'
-  side?: 'left' | 'right'
-}
+  colour: string;
+  item: GalleryItem;
+};
 
-function GalleryCard({colour, item, onActivate, shape, side}: CardProps) {
-  const [hasLoaded, setHasLoaded] = useState(false)
-  const className = shape && side
-    ? `gallery-pair-item gallery-pair-item--${shape} gallery-pair-item--${side}`
-    : `gallery-item gallery-item--${item.ratio} gallery-item--${item.size ?? 'standard'}`
+function GalleryCard({ colour, item }: CardProps) {
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const ratioClassName = {
+    landscape: styles.landscape,
+    portrait: styles.portrait,
+    square: styles.square,
+  }[item.ratio];
 
   return (
-    <article
-      className={className}
-      onFocus={() => onActivate(item.title)}
-      onMouseEnter={() => onActivate(item.title)}
-      onTouchStart={() => onActivate(item.title)}
-    >
+    <article className={`${styles.item} ${ratioClassName}`}>
       <div
         aria-label={item.title}
-        className={`gallery-image-slot${hasLoaded ? ' is-loaded' : ''}`}
+        className={[styles.imageSlot, hasLoaded && styles.loaded]
+          .filter(Boolean)
+          .join(" ")}
         role="img"
-        style={{'--slot-color': colour} as CSSProperties}
+        style={{ "--slot-color": colour } as CSSProperties}
       >
-        {item.src && <img alt="" className="gallery-image" onLoad={() => setHasLoaded(true)} src={item.src} />}
+        {item.src && (
+          <img
+            alt=""
+            className={styles.image}
+            onLoad={() => setHasLoaded(true)}
+            src={item.src}
+          />
+        )}
       </div>
     </article>
-  )
+  );
 }
 
 export default function GalleryPage() {
-  const [activeTitle, setActiveTitle] = useState('')
-  const [isPairView, setIsPairView] = useState(false)
-  const [pairIndex, setPairIndex] = useState(0)
-  const visiblePair = galleryPairs[pairIndex] ?? galleryPairs[0]
-  const colourFor = (item: GalleryItem) => galleryColours[(item.id - 1) % galleryColours.length]
-
-  const layoutToggle = (
-    <button
-      aria-label={isPairView ? 'Show gallery grid' : 'Show paired gallery'}
-      aria-pressed={isPairView}
-      className="gallery-layout-toggle"
-      onClick={() => setIsPairView((current) => !current)}
-      type="button"
-    >
-      <span>{isPairView ? 'II' : 'I'}</span>
-      <span className="gallery-layout-copy--inactive">{isPairView ? 'I' : 'II'}</span>
-    </button>
-  )
-
-  const headerTitle = isPairView && visiblePair ? (
-    <>
-      <span className="gallery-pair-nav-title gallery-pair-nav-title--left">{visiblePair[0].title}</span>
-      <span className="gallery-pair-nav-title gallery-pair-nav-title--right">{visiblePair[1].title}</span>
-    </>
-  ) : <p aria-live="polite" className="site-header__page-title">{activeTitle}</p>
+  const colourFor = (item: GalleryItem) =>
+    galleryColours[(item.id - 1) % galleryColours.length];
 
   return (
-    <main className={`gallery-page${isPairView ? ' gallery-page--pairs' : ''}`}>
-      <SiteHeader className="gallery-header" start={layoutToggle} title={headerTitle} tone="gallery" />
-      {isPairView ? (
-        <section
-          aria-label="Paired gallery"
-          className="gallery-pairs"
-          onScroll={(event) => setPairIndex(Math.round(event.currentTarget.scrollTop / event.currentTarget.clientHeight))}
-        >
-          {galleryPairs.map(([portrait, landscape], index) => (
-            <div className="gallery-pair" key={`${portrait.id}-${landscape.id}`}>
-              <GalleryCard colour={colourFor(portrait)} item={portrait} onActivate={setActiveTitle} shape="portrait" side={index % 2 === 0 ? 'left' : 'right'} />
-              <GalleryCard colour={colourFor(landscape)} item={landscape} onActivate={setActiveTitle} shape="landscape" side={index % 2 === 0 ? 'right' : 'left'} />
-            </div>
-          ))}
-        </section>
-      ) : (
-        <section aria-label="Gallery" className="gallery-grid">
-          {galleryItems.map((item) => <GalleryCard colour={colourFor(item)} item={item} key={item.id} onActivate={setActiveTitle} />)}
-        </section>
-      )}
-      {!isPairView && <SiteFooter className="gallery-footer" />}
+    <main className={styles.page}>
+      <section aria-label="Gallery" className={styles.grid}>
+        <h1 className="visually-hidden">Gallery</h1>
+        {galleryItems.map((item) => (
+          <GalleryCard colour={colourFor(item)} item={item} key={item.id} />
+        ))}
+      </section>
+      <SiteNavigation className={styles.siteNavigation} />
     </main>
-  )
+  );
 }

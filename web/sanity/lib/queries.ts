@@ -73,14 +73,11 @@ export const ABOUT_PAGE_QUERY = defineQuery(`
     "page": *[_type == "page" && slug.current == "about"][0] {
       title,
       intro,
-      "image": content[_type == "image"][0] {
-        asset,
-        alt
-      }
-    },
-    "fallbackImage": *[_type == "post" && defined(coverImage.asset)][0].coverImage {
-      asset,
-      alt
+      contactLinks[]{_key, label, url},
+      newsletterHeading,
+      newsletterFields,
+      creditHeading,
+      creditLink {label, url}
     }
   }
 `)
