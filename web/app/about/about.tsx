@@ -1,5 +1,6 @@
 import { SiteNavigation } from "@/app/components/site-navigation/site-navigation";
 import styles from "@/app/components/styles/module/about.module.scss";
+import { AboutEntrance } from "./about-entrance";
 import { getAboutPage } from "./about.ts";
 
 export default async function AboutPage({
@@ -18,7 +19,7 @@ export default async function AboutPage({
   } = await getAboutPage();
   const isContactView = (await searchParams).view === "contact";
 
-  return (
+  const content = (
     <main
       className={[styles.page, isContactView && styles.contactView]
         .filter(Boolean)
@@ -59,4 +60,6 @@ export default async function AboutPage({
       <SiteNavigation className={styles.siteNavigation} showBrand={false} />
     </main>
   );
+
+  return isContactView ? content : <AboutEntrance>{content}</AboutEntrance>;
 }

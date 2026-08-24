@@ -1,11 +1,11 @@
 @use "../shared" as *;
 
 .scrollArea {
-  @include viewport-page($colour-journal, height);
+  @include viewport-page(#acb8ae, height);
   overflow: hidden;
 }
 .embeddedScrollArea {
-  background: $colour-paper;
+  background: #fffffc;
   grid-column: 1 / -1;
   height: auto;
   margin-top: 0;
@@ -21,7 +21,7 @@
 }
 .scrollViewport {
   align-items: center;
-  background: $colour-journal;
+  background: #acb8ae;
   color: #2f322f;
   display: flex;
   height: 100svh;
@@ -39,7 +39,7 @@
     #000 28%,
     #000 100%
   );
-  background: $colour-paper;
+  background: #fffffc;
   color: $colour-black;
   height: clamp(480px, 70svh, 720px);
   mask-image: linear-gradient(

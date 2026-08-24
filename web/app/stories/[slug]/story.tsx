@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { PortableText } from "next-sanity";
 import { FadeInImage } from "@/app/components/fade-in-image/fade-in-image";
 import { SiteNavigation } from "@/app/components/site-navigation/site-navigation";
@@ -71,9 +70,9 @@ export default async function StoryPage({
             <PortableText components={components} value={story.content} />
           </div>
         )}
-        <Link className={styles.moreStories} href="/stories">
+        <span className={styles.moreStories}>
           More Stories
-        </Link>
+        </span>
         <StoriesPage embedded posts={posts} />
       </article>
       <SiteNavigation className={styles.navigation} showBrand={false} />

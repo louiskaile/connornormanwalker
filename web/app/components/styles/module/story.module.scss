@@ -148,7 +148,7 @@
 }
 
 .moreStories {
-  @include navigation-link;
+  @include navigation-copy;
   color: #000;
   @include grid-span(7, 8);
   justify-self: center;

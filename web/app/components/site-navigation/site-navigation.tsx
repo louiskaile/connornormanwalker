@@ -6,7 +6,11 @@ import { gsap } from "gsap";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import styles from "@/app/components/styles/module/siteNavigation.module.scss";
 
-type SiteNavigationProps = { className?: string; showBrand?: boolean };
+type SiteNavigationProps = {
+  brandLabel?: string;
+  className?: string;
+  showBrand?: boolean;
+};
 
 const navigationEntrance = {
   delay: 0.2,
@@ -18,30 +22,45 @@ const navigationEntrance = {
 // This is the site's only global navigation. Its visual position is at the
 // bottom of the viewport, but semantically it remains the primary navigation.
 export function SiteNavigation({
+  brandLabel,
   className = "",
   showBrand = true,
 }: SiteNavigationProps) {
   return (
     <Suspense
       fallback={
-        <SiteNavigationFallback className={className} showBrand={showBrand} />
+        <SiteNavigationFallback
+          brandLabel={brandLabel}
+          className={className}
+          showBrand={showBrand}
+        />
       }
     >
-      <SiteNavigationContent className={className} showBrand={showBrand} />
+      <SiteNavigationContent
+        brandLabel={brandLabel}
+        className={className}
+        showBrand={showBrand}
+      />
     </Suspense>
   );
 }
 
 function SiteNavigationFallback({
+  brandLabel,
   className,
   showBrand,
-}: Required<SiteNavigationProps>) {
+}: Omit<SiteNavigationProps, "className" | "showBrand"> & {
+  className: string;
+  showBrand: boolean;
+}) {
   return (
     <nav
       aria-label="Primary navigation"
       className={[styles.siteNavigation, className].filter(Boolean).join(" ")}
     >
-      {showBrand && <span className={styles.brand}>Connor Norman-Walker</span>}
+      {showBrand && (
+        <span className={styles.brand}>{brandLabel ?? "Connor Norman-Walker"}</span>
+      )}
       <div className={styles.links}>
         <Link href="/gallery">Gallery</Link>
         <Link href="/about">About</Link>
@@ -52,9 +71,13 @@ function SiteNavigationFallback({
 }
 
 function SiteNavigationContent({
+  brandLabel,
   className,
   showBrand,
-}: Required<SiteNavigationProps>) {
+}: Omit<SiteNavigationProps, "className" | "showBrand"> & {
+  className: string;
+  showBrand: boolean;
+}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [showTokyo, setShowTokyo] = useState(false);
@@ -110,7 +133,7 @@ function SiteNavigationContent({
   }, [navItems]);
 
   useEffect(() => {
-    if (!showBrand) return;
+    if (!showBrand || brandLabel) return;
 
     const brandName = brandNameRef.current;
     const brandTokyo = brandTokyoRef.current;
@@ -168,7 +191,7 @@ function SiteNavigationContent({
     return () => {
       timeline.kill();
     };
-  }, [navItems, showBrand]);
+  }, [brandLabel, navItems, showBrand]);
 
   return (
     <nav
@@ -177,23 +200,29 @@ function SiteNavigationContent({
     >
       {showBrand && (
         <span className={styles.brand}>
-          <span className="visually-hidden">
-            {showTokyo ? "Tokyo" : "Connor Norman-Walker"}
-          </span>
-          <span
-            aria-hidden="true"
-            className={styles.brandName}
-            ref={brandNameRef}
-          >
-            Connor Norman-Walker
-          </span>
-          <span
-            aria-hidden="true"
-            className={styles.brandTokyo}
-            ref={brandTokyoRef}
-          >
-            Tokyo
-          </span>
+          {brandLabel ? (
+            brandLabel
+          ) : (
+            <>
+              <span className="visually-hidden">
+                {showTokyo ? "Tokyo" : "Connor Norman-Walker"}
+              </span>
+              <span
+                aria-hidden="true"
+                className={styles.brandName}
+                ref={brandNameRef}
+              >
+                Connor Norman-Walker
+              </span>
+              <span
+                aria-hidden="true"
+                className={styles.brandTokyo}
+                ref={brandTokyoRef}
+              >
+                Tokyo
+              </span>
+            </>
+          )}
         </span>
       )}
       <div className={styles.links}>
