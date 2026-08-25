@@ -100,15 +100,15 @@
 @include breakpoint(mobile) {
   .page {
     @include mobile-inline-padding;
-    align-items: center;
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
     min-height: 100svh;
     padding-bottom: max(28px, env(safe-area-inset-bottom));
     padding-top: max(28px, env(safe-area-inset-top));
   }
 
   .navigation {
+    align-self: center;
     height: auto;
     left: auto;
     max-width: 560px;
@@ -133,5 +133,14 @@
       max-width: 100%;
       overflow-wrap: anywhere;
     }
+  }
+
+  // Keep the utility navigation in the document flow on small screens. This
+  // reserves room for it instead of letting the fixed footer cover the main
+  // menu on shorter phone viewports.
+  .siteNavigation {
+    align-self: end;
+    position: static;
+    width: 100%;
   }
 }
