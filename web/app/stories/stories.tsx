@@ -11,7 +11,7 @@ import { SiteNavigation } from "@/app/components/site-navigation/site-navigation
 import styles from "@/app/components/styles/module/stories.module.scss";
 import type { JournalPostSummary } from "./stories.ts";
 
-const MOBILE_TOUCH_STEP = 40;
+const MOBILE_TOUCH_STEP = 56;
 
 export function StoriesPage({
   embedded = false,
@@ -58,7 +58,7 @@ export function StoriesPage({
     scrollUnlockTimerRef.current = window.setTimeout(() => {
       scrollLockedRef.current = false;
       wheelDistanceRef.current = 0;
-    }, window.innerWidth <= 767 ? 40 : 90);
+    }, window.innerWidth <= 767 ? 60 : 90);
   }, []);
 
   useEffect(() => {
@@ -145,8 +145,8 @@ export function StoriesPage({
       const steps =
         window.innerWidth <= 767
           ? Math.min(
-              8,
-              Math.max(3, Math.round(Math.abs(wheelDistanceRef.current) / 12)),
+              4,
+              Math.max(1, Math.round(Math.abs(wheelDistanceRef.current) / 18)),
             )
           : 1;
       wheelDistanceRef.current = 0;
@@ -188,7 +188,7 @@ export function StoriesPage({
           ? currentIndex + posts.length * 3
           : currentIndex - posts.length * 3,
       );
-    }, window.innerWidth <= 767 ? 460 : 530);
+    }, window.innerWidth <= 767 ? 520 : 530);
 
     return () => window.clearTimeout(resetTimer);
   }, [activeIndex, posts.length]);
@@ -214,7 +214,7 @@ export function StoriesPage({
       setIsDragging(true);
       listRef.current?.style.setProperty(
         "--journal-mobile-duration",
-        "220ms",
+        "300ms",
       );
     }
   };
@@ -257,14 +257,14 @@ export function StoriesPage({
 
     if (!embedded && window.innerWidth <= 767) {
       const momentumSteps = Math.min(
-        5,
-        Math.max(0, Math.round(Math.abs(velocity) * 2.4) - 1),
+        3,
+        Math.max(0, Math.round(Math.abs(velocity) * 1.6) - 1),
       );
       const direction = Math.sign(velocity || completedSteps);
 
       listRef.current?.style.setProperty(
         "--journal-mobile-duration",
-        `${220 + momentumSteps * 36}ms`,
+        `${300 + momentumSteps * 45}ms`,
       );
       setIsDragging(false);
 
