@@ -23,7 +23,10 @@ export function StoriesPage({
   const listRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const touchStartYRef = useRef<number | null>(null);
+  const touchLastYRef = useRef<number | null>(null);
+  const touchLastTimeRef = useRef(0);
   const touchStepsRef = useRef(0);
+  const touchVelocityRef = useRef(0);
   const wheelDistanceRef = useRef(0);
   const scrollLockedRef = useRef(false);
   const scrollUnlockTimerRef = useRef<number | null>(null);
@@ -33,6 +36,7 @@ export function StoriesPage({
   const [activeItemOffset, setActiveItemOffset] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
   const featuredPostIndex = Math.max(
     0,
@@ -184,7 +188,7 @@ export function StoriesPage({
           ? currentIndex + posts.length * 3
           : currentIndex - posts.length * 3,
       );
-    }, window.innerWidth <= 767 ? 260 : 530);
+    }, window.innerWidth <= 767 ? 460 : 530);
 
     return () => window.clearTimeout(resetTimer);
   }, [activeIndex, posts.length]);
@@ -199,16 +203,36 @@ export function StoriesPage({
   const offset = viewportHeight / 2 - itemHeight / 2 - activeItemOffset;
 
   const handleTouchStart = (event: TouchEvent) => {
-    touchStartYRef.current = event.touches[0]?.clientY ?? null;
+    const startY = event.touches[0]?.clientY ?? null;
+    touchStartYRef.current = startY;
+    touchLastYRef.current = startY;
+    touchLastTimeRef.current = event.timeStamp;
     touchStepsRef.current = 0;
+    touchVelocityRef.current = 0;
+
+    if (!embedded && window.innerWidth <= 767 && startY !== null) {
+      setIsDragging(true);
+      listRef.current?.style.setProperty(
+        "--journal-mobile-duration",
+        "220ms",
+      );
+    }
   };
 
   const handleTouchMove = (event: TouchEvent) => {
-    if (window.innerWidth > 767) return;
+    if (embedded || window.innerWidth > 767) return;
 
     const startY = touchStartYRef.current;
     const currentY = event.touches[0]?.clientY;
     if (startY === null || currentY === undefined) return;
+
+    const previousY = touchLastYRef.current ?? currentY;
+    const elapsed = Math.max(8, event.timeStamp - touchLastTimeRef.current);
+    const instantVelocity = (previousY - currentY) / elapsed;
+    touchVelocityRef.current =
+      touchVelocityRef.current * 0.72 + instantVelocity * 0.28;
+    touchLastYRef.current = currentY;
+    touchLastTimeRef.current = event.timeStamp;
 
     const totalSteps = Math.trunc((startY - currentY) / MOBILE_TOUCH_STEP);
     const newSteps = totalSteps - touchStepsRef.current;
@@ -224,10 +248,45 @@ export function StoriesPage({
     const startY = touchStartYRef.current;
     const endY = event.changedTouches[0]?.clientY;
     const completedSteps = touchStepsRef.current;
+    const velocity = touchVelocityRef.current;
     touchStartYRef.current = null;
+    touchLastYRef.current = null;
+    touchLastTimeRef.current = 0;
     touchStepsRef.current = 0;
+    touchVelocityRef.current = 0;
 
-    if (window.innerWidth <= 767 && completedSteps !== 0) return;
+    if (!embedded && window.innerWidth <= 767) {
+      const momentumSteps = Math.min(
+        5,
+        Math.max(0, Math.round(Math.abs(velocity) * 2.4) - 1),
+      );
+      const direction = Math.sign(velocity || completedSteps);
+
+      listRef.current?.style.setProperty(
+        "--journal-mobile-duration",
+        `${220 + momentumSteps * 36}ms`,
+      );
+      setIsDragging(false);
+
+      if (completedSteps !== 0) {
+        if (momentumSteps > 0 && direction !== 0) {
+          setIsAnimating(true);
+          setActiveIndex(
+            (currentIndex) => currentIndex + direction * momentumSteps,
+          );
+        }
+        return;
+      }
+
+      if (
+        startY !== null &&
+        endY !== undefined &&
+        Math.abs(startY - endY) >= 28
+      ) {
+        moveTitles(startY > endY ? 1 : -1, 1 + momentumSteps);
+        return;
+      }
+    }
 
     if (
       startY === null ||
@@ -238,6 +297,15 @@ export function StoriesPage({
     moveTitles(startY > endY ? 1 : -1);
   };
 
+  const handleTouchCancel = () => {
+    touchStartYRef.current = null;
+    touchLastYRef.current = null;
+    touchLastTimeRef.current = 0;
+    touchStepsRef.current = 0;
+    touchVelocityRef.current = 0;
+    setIsDragging(false);
+  };
+
   const titleScroller = (
     <div
       className={[
@@ -246,6 +314,7 @@ export function StoriesPage({
       ]
         .filter(Boolean)
         .join(" ")}
+      onTouchCancel={handleTouchCancel}
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchMove}
       onTouchStart={handleTouchStart}
@@ -267,6 +336,7 @@ export function StoriesPage({
             styles.scrollList,
             embedded && styles.embeddedList,
             isAnimating && styles.spinning,
+            isDragging && styles.dragging,
           ]
             .filter(Boolean)
             .join(" ")}

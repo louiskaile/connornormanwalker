@@ -162,7 +162,12 @@
     --journal-focus-lift: -24px;
 
     &.spinning {
-      transition: transform 120ms cubic-bezier(0.22, 0.85, 0.28, 1);
+      transition: transform var(--journal-mobile-duration, 220ms)
+        cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    &.dragging {
+      transition: transform 90ms linear;
     }
   }
 
@@ -179,7 +184,7 @@
     line-height: 108%;
     padding: 5px 0;
     transition:
-      filter 120ms $ease-out,
-      opacity 90ms ease;
+      filter 160ms $ease-out,
+      opacity 120ms ease;
   }
 }
