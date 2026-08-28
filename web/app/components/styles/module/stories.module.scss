@@ -29,7 +29,7 @@
   overflow: hidden;
   padding: 0 32px;
   position: relative;
-  margin-bottom: 1000px;
+  margin-bottom: 0;
 }
 .embeddedViewport {
   -webkit-mask-image: linear-gradient(
@@ -136,10 +136,21 @@
 }
 
 @include breakpoint(mobile) {
+  .scrollArea:not(.embeddedScrollArea) {
+    inset: 0;
+    overscroll-behavior: none;
+    position: fixed;
+    width: 100%;
+  }
+
   .scrollViewport {
     @include mobile-inline-padding;
     padding-bottom: 76px;
     padding-top: 20px;
+  }
+
+  .scrollArea:not(.embeddedScrollArea) .scrollViewport {
+    touch-action: none;
   }
 
   .list {
@@ -158,7 +169,7 @@
   }
 
   .postLink {
-    font-size: clamp(32px, 9vw, 48px);
+    font-size: clamp(28px, 8vw, 42px);
     letter-spacing: clamp(-0.96px, -0.18vw, -0.64px);
     line-height: 108%;
     padding: 5px 0;

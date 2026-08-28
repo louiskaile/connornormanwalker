@@ -114,13 +114,9 @@
     height: auto;
     left: auto;
     max-width: 560px;
-    min-height: 0;
-    overflow-y: auto;
     position: static;
     top: auto;
     width: 100%;
-
-    @include hidden-scrollbar;
 
     ul {
       display: flex;
@@ -133,7 +129,7 @@
     }
 
     a {
-      font-size: clamp(32px, 10vw, 54px);
+      font-size: clamp(38px, 12vw, 64px);
       letter-spacing: clamp(4.18px, 1.32vw, 7.04px);
       line-height: 96%;
       max-width: 100%;
