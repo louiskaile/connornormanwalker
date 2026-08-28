@@ -190,6 +190,9 @@
 
   .scrollArea:not(.embeddedScrollArea) .postLink {
     font-size: clamp(56px, 5.2vw, 106px);
-    line-height: 105%;
+  }
+
+  .scrollList .postLink {
+    line-height: 130%;
   }
 }
