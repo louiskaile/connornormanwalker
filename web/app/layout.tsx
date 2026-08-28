@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import "./globals.scss";
-import { IdleOverlay } from "@/app/components/idle-overlay/idle-overlay";
 import { getHomeMetadata } from "@/sanity/lib/metadata";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,7 +14,6 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {children}
-        <IdleOverlay />
       </body>
     </html>
   );
