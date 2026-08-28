@@ -211,7 +211,7 @@
     right: 0;
     text-align: center;
     top: max(20px, env(safe-area-inset-top));
-    z-index: 12;
+    z-index: 11;
   }
 
   .grid {
@@ -224,8 +224,6 @@
     overscroll-behavior-y: contain;
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
-    position: relative;
-    z-index: 11;
     @include hidden-scrollbar;
   }
 
