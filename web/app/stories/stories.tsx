@@ -40,12 +40,12 @@ export function StoriesPage({
   );
   const repeatedPosts = Array.from({ length: 7 }, () => posts).flat();
 
-  const moveTitles = useCallback((direction: number) => {
+  const moveTitles = useCallback((direction: number, steps = 1) => {
     if (scrollLockedRef.current) return;
 
     scrollLockedRef.current = true;
     setIsAnimating(true);
-    setActiveIndex((currentIndex) => currentIndex + direction);
+    setActiveIndex((currentIndex) => currentIndex + direction * steps);
     navigator.vibrate?.(8);
 
     scrollUnlockTimerRef.current = window.setTimeout(() => {
@@ -135,8 +135,12 @@ export function StoriesPage({
         return;
 
       const direction = Math.sign(wheelDistanceRef.current);
+      const steps =
+        window.innerWidth <= 767
+          ? Math.min(4, Math.max(1, Math.round(Math.abs(wheelDistanceRef.current) / 20)))
+          : 1;
       wheelDistanceRef.current = 0;
-      moveTitles(direction);
+      moveTitles(direction, steps);
     };
 
     const embeddedViewport = embedded ? viewportRef.current : null;
@@ -197,9 +201,17 @@ export function StoriesPage({
     const endY = event.changedTouches[0]?.clientY;
     touchStartYRef.current = null;
 
-    if (startY === null || endY === undefined || Math.abs(startY - endY) < 28)
+    if (
+      startY === null ||
+      endY === undefined ||
+      Math.abs(startY - endY) < (window.innerWidth <= 767 ? 28 : 40)
+    )
       return;
-    moveTitles(startY > endY ? 1 : -1);
+    const steps =
+      window.innerWidth <= 767
+        ? Math.min(4, Math.max(1, Math.round(Math.abs(startY - endY) / 70)))
+        : 1;
+    moveTitles(startY > endY ? 1 : -1, steps);
   };
 
   const titleScroller = (
