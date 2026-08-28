@@ -27,6 +27,7 @@ export function StoriesPage({
   const touchLastTimeRef = useRef(0);
   const touchStepsRef = useRef(0);
   const touchVelocityRef = useRef(0);
+  const activeIndexRef = useRef(0);
   const wheelDistanceRef = useRef(0);
   const scrollLockedRef = useRef(false);
   const scrollUnlockTimerRef = useRef<number | null>(null);
@@ -47,19 +48,58 @@ export function StoriesPage({
   );
   const repeatedPosts = Array.from({ length: 7 }, () => posts).flat();
 
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
+
+  const shiftTitles = useCallback(
+    (amount: number) => {
+      if (window.innerWidth > 767) {
+        setIsAnimating(true);
+        setActiveIndex((currentIndex) => currentIndex + amount);
+        return;
+      }
+
+      const lowerLoopBoundary = posts.length;
+      const upperLoopBoundary = posts.length * 6;
+      const loopShift = posts.length * 3;
+      let nextIndex = activeIndexRef.current + amount;
+      let didWrap = false;
+
+      while (nextIndex <= lowerLoopBoundary) {
+        nextIndex += loopShift;
+        didWrap = true;
+      }
+      while (nextIndex >= upperLoopBoundary) {
+        nextIndex -= loopShift;
+        didWrap = true;
+      }
+
+      activeIndexRef.current = nextIndex;
+      setActiveIndex(nextIndex);
+
+      if (didWrap) {
+        setIsAnimating(false);
+        window.requestAnimationFrame(() => setIsAnimating(true));
+      } else {
+        setIsAnimating(true);
+      }
+    },
+    [posts.length],
+  );
+
   const moveTitles = useCallback((direction: number, steps = 1) => {
     if (scrollLockedRef.current) return;
 
     scrollLockedRef.current = true;
-    setIsAnimating(true);
-    setActiveIndex((currentIndex) => currentIndex + direction * steps);
+    shiftTitles(direction * steps);
     navigator.vibrate?.(8);
 
     scrollUnlockTimerRef.current = window.setTimeout(() => {
       scrollLockedRef.current = false;
       wheelDistanceRef.current = 0;
     }, window.innerWidth <= 767 ? 60 : 90);
-  }, []);
+  }, [shiftTitles]);
 
   useEffect(() => {
     let isDisposed = false;
@@ -175,6 +215,8 @@ export function StoriesPage({
   }, [embedded, moveTitles]);
 
   useEffect(() => {
+    if (window.innerWidth <= 767) return;
+
     const lowerLoopBoundary = posts.length;
     const upperLoopBoundary = posts.length * 6;
 
@@ -188,7 +230,7 @@ export function StoriesPage({
           ? currentIndex + posts.length * 3
           : currentIndex - posts.length * 3,
       );
-    }, window.innerWidth <= 767 ? 520 : 530);
+    }, 530);
 
     return () => window.clearTimeout(resetTimer);
   }, [activeIndex, posts.length]);
@@ -239,8 +281,7 @@ export function StoriesPage({
     if (newSteps === 0) return;
 
     touchStepsRef.current = totalSteps;
-    setIsAnimating(true);
-    setActiveIndex((currentIndex) => currentIndex + newSteps);
+    shiftTitles(newSteps);
     navigator.vibrate?.(4);
   };
 
@@ -270,10 +311,7 @@ export function StoriesPage({
 
       if (completedSteps !== 0) {
         if (momentumSteps > 0 && direction !== 0) {
-          setIsAnimating(true);
-          setActiveIndex(
-            (currentIndex) => currentIndex + direction * momentumSteps,
-          );
+          shiftTitles(direction * momentumSteps);
         }
         return;
       }
