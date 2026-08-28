@@ -209,7 +209,7 @@ export function StoriesPage({
       return;
     const steps =
       window.innerWidth <= 767
-        ? Math.min(4, Math.max(1, Math.round(Math.abs(startY - endY) / 70)))
+        ? Math.min(4, Math.max(2, Math.round(Math.abs(startY - endY) / 45)))
         : 1;
     moveTitles(startY > endY ? 1 : -1, steps);
   };
