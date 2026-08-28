@@ -154,6 +154,20 @@ footer.contentBlock {
     gap: 4px;
   }
 
+  // Use the credit block in the newsletter position on mobile.
+  .newsletterBlock {
+    display: none;
+  }
+
+  .contactLinks,
+  .contentBlock:has(h2) {
+    margin-top: 30px;
+  }
+
+  footer.contentBlock {
+    margin-top: 30px;
+  }
+
   .siteNavigation {
     padding-bottom: max(20px, env(safe-area-inset-bottom));
   }
