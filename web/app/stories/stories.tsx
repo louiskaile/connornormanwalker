@@ -51,7 +51,7 @@ export function StoriesPage({
     scrollUnlockTimerRef.current = window.setTimeout(() => {
       scrollLockedRef.current = false;
       wheelDistanceRef.current = 0;
-    }, window.innerWidth <= 767 ? 60 : 90);
+    }, window.innerWidth <= 767 ? 40 : 90);
   }, []);
 
   useEffect(() => {
@@ -137,7 +137,10 @@ export function StoriesPage({
       const direction = Math.sign(wheelDistanceRef.current);
       const steps =
         window.innerWidth <= 767
-          ? Math.min(4, Math.max(1, Math.round(Math.abs(wheelDistanceRef.current) / 20)))
+          ? Math.min(
+              8,
+              Math.max(3, Math.round(Math.abs(wheelDistanceRef.current) / 12)),
+            )
           : 1;
       wheelDistanceRef.current = 0;
       moveTitles(direction, steps);
@@ -178,7 +181,7 @@ export function StoriesPage({
           ? currentIndex + posts.length * 3
           : currentIndex - posts.length * 3,
       );
-    }, window.innerWidth <= 767 ? 380 : 530);
+    }, window.innerWidth <= 767 ? 260 : 530);
 
     return () => window.clearTimeout(resetTimer);
   }, [activeIndex, posts.length]);
@@ -209,7 +212,7 @@ export function StoriesPage({
       return;
     const steps =
       window.innerWidth <= 767
-        ? Math.min(4, Math.max(2, Math.round(Math.abs(startY - endY) / 45)))
+        ? Math.min(8, Math.max(3, Math.round(Math.abs(startY - endY) / 35)))
         : 1;
     moveTitles(startY > endY ? 1 : -1, steps);
   };
