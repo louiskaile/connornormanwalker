@@ -150,7 +150,7 @@
     padding-top: 20px;
   }
 
-  .scrollArea:not(.embeddedScrollArea) .scrollViewport {
+  .scrollViewport {
     touch-action: none;
   }
 
@@ -186,5 +186,10 @@
     transition:
       filter 160ms $ease-out,
       opacity 120ms ease;
+  }
+
+  .scrollArea:not(.embeddedScrollArea) .postLink {
+    font-size: clamp(56px, 5.2vw, 106px);
+    line-height: 105%;
   }
 }

@@ -83,7 +83,7 @@
       position: fixed;
       right: 0;
       text-align: center;
-      top: max(28px, env(safe-area-inset-top));
+      top: max(20px, env(safe-area-inset-top));
 
       .brandName,
       .brandTokyo {

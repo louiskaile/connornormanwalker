@@ -252,7 +252,7 @@ export function StoriesPage({
     touchStepsRef.current = 0;
     touchVelocityRef.current = 0;
 
-    if (!embedded && window.innerWidth <= 767 && startY !== null) {
+    if (window.innerWidth <= 767 && startY !== null) {
       setIsDragging(true);
       listRef.current?.style.setProperty(
         "--journal-mobile-duration",
@@ -262,7 +262,7 @@ export function StoriesPage({
   };
 
   const handleTouchMove = (event: TouchEvent) => {
-    if (embedded || window.innerWidth > 767) return;
+    if (window.innerWidth > 767) return;
 
     const startY = touchStartYRef.current;
     const currentY = event.touches[0]?.clientY;
@@ -296,7 +296,7 @@ export function StoriesPage({
     touchStepsRef.current = 0;
     touchVelocityRef.current = 0;
 
-    if (!embedded && window.innerWidth <= 767) {
+    if (window.innerWidth <= 767) {
       const momentumSteps = Math.min(
         3,
         Math.max(0, Math.round(Math.abs(velocity) * 1.6) - 1),
