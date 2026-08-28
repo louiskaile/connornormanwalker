@@ -11,6 +11,8 @@ import { SiteNavigation } from "@/app/components/site-navigation/site-navigation
 import styles from "@/app/components/styles/module/stories.module.scss";
 import type { JournalPostSummary } from "./stories.ts";
 
+const MOBILE_TOUCH_STEP = 40;
+
 export function StoriesPage({
   embedded = false,
   posts,
@@ -21,6 +23,7 @@ export function StoriesPage({
   const listRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const touchStartYRef = useRef<number | null>(null);
+  const touchStepsRef = useRef(0);
   const wheelDistanceRef = useRef(0);
   const scrollLockedRef = useRef(false);
   const scrollUnlockTimerRef = useRef<number | null>(null);
@@ -197,12 +200,34 @@ export function StoriesPage({
 
   const handleTouchStart = (event: TouchEvent) => {
     touchStartYRef.current = event.touches[0]?.clientY ?? null;
+    touchStepsRef.current = 0;
+  };
+
+  const handleTouchMove = (event: TouchEvent) => {
+    if (window.innerWidth > 767) return;
+
+    const startY = touchStartYRef.current;
+    const currentY = event.touches[0]?.clientY;
+    if (startY === null || currentY === undefined) return;
+
+    const totalSteps = Math.trunc((startY - currentY) / MOBILE_TOUCH_STEP);
+    const newSteps = totalSteps - touchStepsRef.current;
+    if (newSteps === 0) return;
+
+    touchStepsRef.current = totalSteps;
+    setIsAnimating(true);
+    setActiveIndex((currentIndex) => currentIndex + newSteps);
+    navigator.vibrate?.(4);
   };
 
   const handleTouchEnd = (event: TouchEvent) => {
     const startY = touchStartYRef.current;
     const endY = event.changedTouches[0]?.clientY;
+    const completedSteps = touchStepsRef.current;
     touchStartYRef.current = null;
+    touchStepsRef.current = 0;
+
+    if (window.innerWidth <= 767 && completedSteps !== 0) return;
 
     if (
       startY === null ||
@@ -210,11 +235,7 @@ export function StoriesPage({
       Math.abs(startY - endY) < (window.innerWidth <= 767 ? 28 : 40)
     )
       return;
-    const steps =
-      window.innerWidth <= 767
-        ? Math.min(8, Math.max(3, Math.round(Math.abs(startY - endY) / 35)))
-        : 1;
-    moveTitles(startY > endY ? 1 : -1, steps);
+    moveTitles(startY > endY ? 1 : -1);
   };
 
   const titleScroller = (
@@ -226,6 +247,7 @@ export function StoriesPage({
         .filter(Boolean)
         .join(" ")}
       onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
       onTouchStart={handleTouchStart}
       ref={viewportRef}
     >
