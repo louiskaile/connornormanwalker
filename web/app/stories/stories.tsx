@@ -21,6 +21,8 @@ export function StoriesPage({
   const listRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const touchStartYRef = useRef<number | null>(null);
+  const touchLastYRef = useRef<number | null>(null);
+  const touchMovedRef = useRef(false);
   const wheelDistanceRef = useRef(0);
   const scrollLockedRef = useRef(false);
   const scrollUnlockTimerRef = useRef<number | null>(null);
@@ -51,7 +53,7 @@ export function StoriesPage({
     scrollUnlockTimerRef.current = window.setTimeout(() => {
       scrollLockedRef.current = false;
       wheelDistanceRef.current = 0;
-    }, 90);
+    }, window.innerWidth <= 767 ? 60 : 90);
   }, []);
 
   useEffect(() => {
@@ -128,7 +130,11 @@ export function StoriesPage({
 
       wheelDistanceRef.current += event.deltaY;
 
-      if (Math.abs(wheelDistanceRef.current) < 28) return;
+      if (
+        Math.abs(wheelDistanceRef.current) <
+        (window.innerWidth <= 767 ? 20 : 28)
+      )
+        return;
 
       const direction = Math.sign(wheelDistanceRef.current);
       wheelDistanceRef.current = 0;
@@ -170,7 +176,7 @@ export function StoriesPage({
           ? currentIndex + posts.length * 3
           : currentIndex - posts.length * 3,
       );
-    }, 530);
+    }, window.innerWidth <= 767 ? 380 : 530);
 
     return () => window.clearTimeout(resetTimer);
   }, [activeIndex, posts.length]);
@@ -185,15 +191,41 @@ export function StoriesPage({
   const offset = viewportHeight / 2 - itemHeight / 2 - activeItemOffset;
 
   const handleTouchStart = (event: TouchEvent) => {
-    touchStartYRef.current = event.touches[0]?.clientY ?? null;
+    const startY = event.touches[0]?.clientY ?? null;
+    touchStartYRef.current = startY;
+    touchLastYRef.current = startY;
+    touchMovedRef.current = false;
+  };
+
+  const handleTouchMove = (event: TouchEvent) => {
+    if (window.innerWidth > 767) return;
+
+    const currentY = event.touches[0]?.clientY;
+    const previousY = touchLastYRef.current;
+    if (currentY === undefined || previousY === null) return;
+
+    const distance = previousY - currentY;
+    if (Math.abs(distance) < 28) return;
+
+    touchLastYRef.current = currentY;
+    touchMovedRef.current = true;
+    moveTitles(Math.sign(distance));
   };
 
   const handleTouchEnd = (event: TouchEvent) => {
     const startY = touchStartYRef.current;
     const endY = event.changedTouches[0]?.clientY;
+    const hasMoved = touchMovedRef.current;
     touchStartYRef.current = null;
+    touchLastYRef.current = null;
+    touchMovedRef.current = false;
 
-    if (startY === null || endY === undefined || Math.abs(startY - endY) < 40)
+    if (
+      hasMoved ||
+      startY === null ||
+      endY === undefined ||
+      Math.abs(startY - endY) < 28
+    )
       return;
     moveTitles(startY > endY ? 1 : -1);
   };
@@ -207,6 +239,7 @@ export function StoriesPage({
         .filter(Boolean)
         .join(" ")}
       onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
       onTouchStart={handleTouchStart}
       ref={viewportRef}
     >
