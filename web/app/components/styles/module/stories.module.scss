@@ -159,7 +159,7 @@
   }
 
   .scrollList {
-    --journal-focus-lift: 28px;
+    --journal-focus-lift: 16px;
 
     &.spinning {
       transition: transform var(--journal-mobile-duration, 300ms)
