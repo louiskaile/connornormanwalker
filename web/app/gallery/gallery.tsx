@@ -61,6 +61,7 @@ function GalleryCard({
           <img
             alt=""
             className={styles.image}
+            loading={entryIndex === 0 ? "eager" : "lazy"}
             onLoad={() => setHasLoaded(true)}
             src={item.src}
           />
@@ -141,7 +142,9 @@ function GalleryLightbox({
 export default function GalleryPage() {
   const [hasEntered, setHasEntered] = useState(false);
   const [hoveredTitle, setHoveredTitle] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const gridRef = useRef<HTMLElement>(null);
   const selectedItem =
     selectedIndex === null ? null : galleryItems[selectedIndex] ?? null;
   const colourFor = (item: GalleryItem) =>
@@ -150,6 +153,41 @@ export default function GalleryPage() {
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setHasEntered(true));
     return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    const updateActiveIndex = () => {
+      if (window.innerWidth > 767) return;
+
+      const gridBounds = grid.getBoundingClientRect();
+      const gridCenter = gridBounds.top + gridBounds.height / 2;
+      const items = Array.from(grid.querySelectorAll("article"));
+      let closestIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      items.forEach((item, index) => {
+        const bounds = item.getBoundingClientRect();
+        const distance = Math.abs(bounds.top + bounds.height / 2 - gridCenter);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+
+      setActiveIndex(closestIndex);
+    };
+
+    updateActiveIndex();
+    grid.addEventListener("scroll", updateActiveIndex, { passive: true });
+    window.addEventListener("resize", updateActiveIndex);
+
+    return () => {
+      grid.removeEventListener("scroll", updateActiveIndex);
+      window.removeEventListener("resize", updateActiveIndex);
+    };
   }, []);
 
   useEffect(() => {
@@ -174,21 +212,27 @@ export default function GalleryPage() {
 
   return (
     <main className={styles.page}>
+      <span aria-live="polite" className={styles.mobileImageTitle}>
+        {galleryItems[activeIndex]?.title}
+      </span>
       <section
         aria-label="Gallery"
         className={[styles.grid, hasEntered && styles.entered]
           .filter(Boolean)
           .join(" ")}
+        ref={gridRef}
       >
         <h1 className="visually-hidden">Gallery</h1>
         {galleryItems.map((item, index) => (
           <GalleryCard
-            colour={colourFor(item)}
-            entryIndex={index}
-            item={item}
-            key={item.id}
-            onHover={setHoveredTitle}
-            onSelect={(item) => setSelectedIndex(item.id - 1)}
+          colour={colourFor(item)}
+          entryIndex={index}
+          item={item}
+          key={item.id}
+          onHover={setHoveredTitle}
+          onSelect={(item) => {
+            if (window.innerWidth > 767) setSelectedIndex(item.id - 1);
+          }}
           />
         ))}
       </section>
